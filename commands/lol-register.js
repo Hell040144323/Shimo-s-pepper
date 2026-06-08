@@ -1,0 +1,155 @@
+const {
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder
+} = require('discord.js');
+
+const laneIcons = {
+  TOP: '<:top:1513177035877519541>',
+  JG: '<:jungle:1513177011445563402>',
+  MID: '<:mid:1513176990201544795>',
+  ADC: '<:bot:1513176967963480175>',
+  SUP: '<:support:1513176932966203627>'
+};
+
+
+module.exports = {
+  data: {
+    name: 'lol-register'
+  },
+
+  async execute(interaction) {
+    const modal = new ModalBuilder()
+      .setCustomId('lol-register')
+      .setTitle('サモナーネーム登録');
+
+    const input = new TextInputBuilder()
+      .setCustomId('lolIdInput')
+      .setLabel('サモナーネームを入力してください')
+      .setStyle(TextInputStyle.Short);
+    const tagInput = new TextInputBuilder()
+      .setCustomId('lolTagInput')
+      .setLabel('タグラインを入力してください（例:1234 ※＃は不要）')
+      .setStyle(TextInputStyle.Short);
+
+    const row1 = new ActionRowBuilder().addComponents(input);
+    const row2 = new ActionRowBuilder().addComponents(tagInput);
+    modal.addComponents(row1, row2);
+
+    await interaction.showModal(modal);
+  },
+
+  async handleModal(interaction) {
+    const lolId = interaction.fields.getTextInputValue('lolIdInput');
+    const tag = interaction.fields.getTextInputValue('lolTagInput');
+
+    const fullId = `${lolId}#${tag}`;
+
+    const publicButton = new ButtonBuilder()
+      .setCustomId(`lol-public-${fullId}`)
+      .setLabel('公開')
+      .setStyle(ButtonStyle.Success);
+
+    const privateButton = new ButtonBuilder()
+      .setCustomId(`lol-private-${fullId}`)
+      .setLabel('非公開')
+      .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder().addComponents(publicButton, privateButton);
+
+    await interaction.reply({
+      content: `ID: ${fullId}\n公開しますか？`,
+      components: [row],
+      ephemeral: true
+    });
+
+  },
+
+  // =========================
+  // ボタン処理（公開/非公開 → レーン選択）
+  // =========================
+  async handleButton(interaction) {
+
+    // 🔥 他のボタン完全無視
+    if (
+      !interaction.customId.startsWith('lol-public-') &&
+      !interaction.customId.startsWith('lol-private-')
+    ) return false;
+
+    // 🔥 すでに返信済みなら止める
+    if (interaction.replied || interaction.deferred) return true;
+
+
+    const [prefix, type, ...rest] = interaction.customId.split('-');
+
+    const lolId = rest.join('-');
+    const userId = interaction.user.id;
+
+    const menu = new StringSelectMenuBuilder()
+      .setCustomId(`lane-final-${userId}-${lolId}-${type}`)
+      .setPlaceholder('レーンを選択してください')
+      .setMinValues(1)
+      .setMaxValues(5)
+      .addOptions([
+        { label: 'TOP', value: 'TOP', emoji: laneIcons.TOP || undefined },
+        { label: 'JG', value: 'JG', emoji: laneIcons.JG || undefined },
+        { label: 'MID', value: 'MID', emoji: laneIcons.MID || undefined },
+        { label: 'ADC', value: 'ADC', emoji: laneIcons.ADC || undefined },
+        { label: 'SUP', value: 'SUP', emoji: laneIcons.SUP || undefined }
+      ]);
+
+    const row = new ActionRowBuilder().addComponents(menu);
+
+    await interaction.update({
+      content: `ID: ${lolId}\nレーンを選択してください`,
+      components: [row]
+    });
+
+    return true;
+  },
+  async handleSelect(interaction) {
+    if (!interaction.customId.startsWith('lane-final-')) return false;
+
+    const [, , userId, lolId, type] = interaction.customId.split('-');
+    const lanes = interaction.values;
+
+    const fs = require('fs');
+    const filePath = './data/lolData.json';
+    let data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    const index = data.findIndex(d => d.userId === userId);
+
+    const newEntry = {
+      userId,
+      lolId,
+      public: (type === 'public'),
+      lanes
+    };
+
+    if (index !== -1) {
+      data[index] = newEntry;
+    } else {
+      data.push(newEntry);
+    }
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+    const member = await interaction.guild.members.fetch(interaction.user.id);
+
+    // 🔥 ロール付与
+    if (!member.roles.cache.has('1513264955330400286')) {
+      await member.roles.add('1513264955330400286');
+    }
+
+    await interaction.reply({
+      content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,
+      ephemeral: true
+    });
+
+    return true;
+  }
+};
