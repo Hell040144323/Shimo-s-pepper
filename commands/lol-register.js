@@ -116,15 +116,12 @@ module.exports = {
 async handleSelect(interaction) {
   if (!interaction.customId.startsWith('lane-final-')) return false;
 
-  const parts = interaction.customId.split('-');
-
-  const userId = parts[2];
-  const type = parts[parts.length - 1];
-  const lolId = parts.slice(3, parts.length - 1).join('-');
+  const [, , userId, ...rest] = interaction.customId.split('-');
+  const type = rest.pop();
+  const lolId = rest.join('-');
   const lanes = interaction.values;
   const guildId = interaction.guild.id;
 
-  // 🔥 DB保存
   await pool.query(
     `INSERT INTO lol_users (guild_id, user_id, lol_id, public, lanes)
      VALUES ($1, $2, $3, $4, $5)
@@ -133,10 +130,10 @@ async handleSelect(interaction) {
     [guildId, userId, lolId, type === 'public', lanes]
   );
 
-  // 🔥 ロール付与
   const member = await interaction.guild.members.fetch(interaction.user.id);
 
-  if (!member.roles.cache.has('1513264955330400286')) {
+  // ⚠ サーバーごとに分岐推奨
+  if (!member.roles.cache.has('1512873027275329548')) {
     await member.roles.add('1513264955330400286');
   }
 
