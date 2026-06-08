@@ -21,9 +21,27 @@ client.once(Events.ClientReady, () => {
   console.log(`ログイン成功: ${client.user.tag}`);
 });
 
+//DB接続
+const pool = require('./db');
+
+(async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS lol_users (
+      guild_id TEXT,
+      user_id TEXT,
+      lol_id TEXT,
+      public BOOLEAN,
+      lanes TEXT[],
+      PRIMARY KEY (guild_id, user_id)
+    );
+  `);
+})();
+
 // イベント処理
 client.on(Events.InteractionCreate, async interaction => {
   try {
+
+    console.log("TOKEN:", process.env.DISCORD_BOT_TOKEN);
 
     // =========================
     // スラッシュコマンド

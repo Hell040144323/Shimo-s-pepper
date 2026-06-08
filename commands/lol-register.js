@@ -16,6 +16,8 @@ const laneIcons = {
   SUP: '<:support:1513176932966203627>'
 };
 
+const pool = require('../db');
+
 
 module.exports = {
   data: {
@@ -111,45 +113,38 @@ module.exports = {
 
     return true;
   },
-  async handleSelect(interaction) {
-    if (!interaction.customId.startsWith('lane-final-')) return false;
+async handleSelect(interaction) {
+  if (!interaction.customId.startsWith('lane-final-')) return false;
 
-    const [, , userId, lolId, type] = interaction.customId.split('-');
-    const lanes = interaction.values;
+  const parts = interaction.customId.split('-');
 
-    const fs = require('fs');
-    const filePath = './data/lolData.json';
-    let data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const userId = parts[2];
+  const type = parts[parts.length - 1];
+  const lolId = parts.slice(3, parts.length - 1).join('-');
+  const lanes = interaction.values;
+  const guildId = interaction.guild.id;
 
-    const index = data.findIndex(d => d.userId === userId);
+  // 🔥 DB保存
+  await pool.query(
+    `INSERT INTO lol_users (guild_id, user_id, lol_id, public, lanes)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (guild_id, user_id)
+     DO UPDATE SET lol_id = $3, public = $4, lanes = $5`,
+    [guildId, userId, lolId, type === 'public', lanes]
+  );
 
-    const newEntry = {
-      userId,
-      lolId,
-      public: (type === 'public'),
-      lanes
-    };
+  // 🔥 ロール付与
+  const member = await interaction.guild.members.fetch(interaction.user.id);
 
-    if (index !== -1) {
-      data[index] = newEntry;
-    } else {
-      data.push(newEntry);
-    }
-
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-
-    const member = await interaction.guild.members.fetch(interaction.user.id);
-
-    // 🔥 ロール付与
-    if (!member.roles.cache.has('1513264955330400286')) {
-      await member.roles.add('1513264955330400286');
-    }
-
-    await interaction.reply({
-      content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,
-      ephemeral: true
-    });
-
-    return true;
+  if (!member.roles.cache.has('1513264955330400286')) {
+    await member.roles.add('1513264955330400286');
   }
+
+  await interaction.reply({
+    content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,
+    ephemeral: true
+  });
+
+  return true;
+}
 };
