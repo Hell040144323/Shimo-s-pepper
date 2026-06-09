@@ -13,6 +13,14 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
+
+    if (!interaction.member.permissions.has('Administrator')) {
+    return interaction.reply({
+      content: 'このコマンドは管理者のみ使用できます',
+      ephemeral: true
+    });
+  }
+  
     const role = interaction.options.getRole('role');
     const guildId = interaction.guild.id;
 
