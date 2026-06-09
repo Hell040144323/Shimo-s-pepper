@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, Events ,Partials} = require('discord.js');
 const fs = require('fs');
 
 const commands = new Map();
-const recruitments = new Map(); 
+const recruitments = require('./recruitments');
 
 // コマンド読み込み
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));

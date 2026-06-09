@@ -1,10 +1,12 @@
 const fs = require('fs');
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
+const recruitments = require('../recruitments');
 
 module.exports = {
     data: {
         name: 'create-recruitment'
     },
+    
 
     async execute(interaction) {
 
