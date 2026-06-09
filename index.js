@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Events } = require('discord.js');
+const { Client, GatewayIntentBits, Events ,Partials} = require('discord.js');
 const fs = require('fs');
 
 const commands = new Map();
@@ -21,9 +21,9 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions
   ],
   partials: [
-    partials.Message,
-    partials.Channel,
-    partials.Reaction
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction
   ]
 });
 
