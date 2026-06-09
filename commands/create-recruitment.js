@@ -32,7 +32,8 @@ module.exports = {
             content: '@everyone',
             embeds: [embed],
             components: [row],
-            fetchReply: true
+            fetchReply: true,
+            allowMentions: { parse: ['everyone'] }
         });
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
