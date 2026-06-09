@@ -28,7 +28,7 @@ module.exports = {
 
         const row = new ActionRowBuilder().addComponents(cancelButton);
 
-        const message = await interaction.reply({
+        const message = await interaction.channel.send({
             content: '@everyone',
             embeds: [embed],
             components: [row],
