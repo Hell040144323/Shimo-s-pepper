@@ -132,10 +132,16 @@ async handleSelect(interaction) {
 
   const member = await interaction.guild.members.fetch(interaction.user.id);
 
-  // ⚠ サーバーごとに分岐推奨
-  if (!member.roles.cache.has('1512873027275329548')) {
-    await member.roles.add('1513264955330400286');
-  }
+  const result = await pool.query(
+  'SELECT role_id FROM guild_settings WHERE guild_id = $1',
+  [guildId]
+);
+
+const roleId = result.rows[0]?.role_id;
+
+if (roleId && !member.roles.cache.has(roleId)) {
+  await member.roles.add(roleId);
+}
 
   await interaction.reply({
     content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,

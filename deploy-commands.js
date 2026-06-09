@@ -37,7 +37,11 @@ const commands = [
     ),
   new SlashCommandBuilder()
     .setName('setup-tutorial')
-    .setDescription('セットアップチュートリアルを表示するコマンド')
+    .setDescription('セットアップチュートリアルを表示するコマンド'),
+  new SlashCommandBuilder()
+    .setName('set-role')
+    .setDescription('登録完了後に付与するロールを設定（管理者用）')
+
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
