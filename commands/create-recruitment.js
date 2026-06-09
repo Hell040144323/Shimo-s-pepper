@@ -10,6 +10,7 @@ module.exports = {
 
     async execute(interaction) {
 
+        await interaction.deferReply({ ephemeral: true });
 
         const embed = new EmbedBuilder()
             .setTitle('🎮募集')
@@ -35,6 +36,13 @@ module.exports = {
             fetchReply: true,
             allowMentions: { parse: ['everyone'] }
         });
+
+        await interaction.editReply({
+            content: '募集を作成しました',
+            embeds: [],
+            components: []
+        });
+        
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
             interaction: interaction,
