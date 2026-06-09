@@ -60,6 +60,17 @@ const commands = [
         .setDescription('募集人数')
         .setRequired(true)
     )
+    .addStringOption(option =>
+      option
+        .setName('title')
+        .setDescription('募集内容（例: ランク/メイヘム/ノーマル/雑談）')
+        .setRequired(true)
+    )
+    .addIntegerOption(option =>
+      option.setName('time')
+        .setDescription('募集期間（分）')
+        .setRequired(true)
+    )
 
 ].map(command => command.toJSON());
 

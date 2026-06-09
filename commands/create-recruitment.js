@@ -10,16 +10,21 @@ module.exports = {
 
     async execute(interaction) {
 
+        const count = interaction.options.getString('count');
+        const time = interaction.options.getInteger('time');
+        const title = interaction.options.getString('title')
+
         await interaction.deferReply({ ephemeral: true });
 
         const embed = new EmbedBuilder()
-            .setTitle('🎮募集')
+            .setTitle(`🎮${interaction.options.getString('title')}募集`)
             .setDescription(`参加するにはリアクションを押してください`)
             .addFields(
-                { name: '募集人数', value: interaction.options.getString('count'), inline: true },
+                { name: '募集人数', value: count, inline: true },
                 { name: '募集主', value: `<@${interaction.user.id}>`, inline: true },
-                { name: '現在の参加者数', value: `0/${interaction.options.getString('count')}`, inline: true }
+                { name: '現在の参加者数', value: `0/${count}`, inline: true }
             )
+
             .setColor(0x00AE86);
 
         const cancelButton = new ButtonBuilder()
@@ -40,17 +45,72 @@ module.exports = {
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
             interaction: interaction,
-            max: Number(interaction.options.getString('count')),
+            max: Number(count),
+            title: title,
             participants: []
         });
         await message.react('✅');
-        
+
         await interaction.editReply({
-        content: '募集を作成しました',
-        embeds: [],
+            content: '募集を作成しました',
+            embeds: [],
             components: []
         });
-        
+
+        let remaining = time * 60;
+
+        const interval = setInterval(async () => {
+
+            const data = recruitments.get(message.id);
+            if (!data) {
+                clearInterval(interval);
+                return;
+            }
+
+            remaining--;
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            const timeText = `${minutes}分${seconds.toString().padStart(2, '0')}秒`;
+
+            const updatedEmbed = new EmbedBuilder()
+                .setTitle(`🎮${title}募集`)
+                .setDescription('参加するにはリアクションを押してください')
+                .addFields(
+                    { name: '募集人数', value: `${data.max}人`, inline: true },
+                    { name: '募集主', value: `<@${data.ownerId}>`, inline: true },
+                    { name: '現在', value: `${data.participants.length}/${data.max}`, inline: true },
+                    { name: '残り時間', value: timeText, inline: true }
+                )
+                .setColor(0x00AE86);
+
+            try {
+                await message.edit({ embeds: [updatedEmbed] });
+            } catch (err) {
+                clearInterval(interval);
+            }
+
+            // 🔥 時間切れ
+            if (remaining <= 0) {
+                clearInterval(interval);
+
+                const timeoutEmbed = new EmbedBuilder()
+                    .setTitle('⏰ 募集終了')
+                    .setDescription('時間切れで募集が終了しました')
+                    .setColor(0xff9900);
+
+                await message.channel.send({ embeds: [timeoutEmbed] });
+
+                try {
+                    await message.delete();
+                } catch { }
+
+                recruitments.delete(message.id);
+            }
+
+        }, 1000); // 1秒ごと更新
+
     },
     async handleButton(interaction) {
 
@@ -104,7 +164,7 @@ module.exports = {
 
         // 🔥 Embed更新
         const embed = new EmbedBuilder()
-            .setTitle('🎮 募集')
+            .setTitle(`🎮${data.title}募集`)
             .setDescription('参加するにはリアクションを押してください')
             .addFields(
                 { name: '募集人数', value: `${data.max}人`, inline: true },
