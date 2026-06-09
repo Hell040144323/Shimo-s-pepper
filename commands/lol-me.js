@@ -11,6 +11,8 @@ const {
 
 const pool = require('../db');
 
+const{getRankFromRiotId}=require('../utils/lolApi');
+
 const laneIcons = {
   TOP: '<:top:1513177035877519541>',
   JG: '<:jungle:1513177011445563402>',
@@ -48,9 +50,7 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
-    const{getRankFromRiotId}=require('../utils/lolApi');
-
-    const rank = await getRankFromRiotId(user.lol_id);
+    const rank = await getRankFromRiotId(userData.lol_id);
 
     const embed = new EmbedBuilder()
       .setTitle('あなたのLoL ID')
@@ -254,8 +254,7 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
-    const{getRankFromRiotId}=require('../utils/lolApi');
-    const rank = await getRankFromRiotId(user.lol_id);
+    const rank = await getRankFromRiotId(userData.lol_id);
 
 
     const embed = new EmbedBuilder()

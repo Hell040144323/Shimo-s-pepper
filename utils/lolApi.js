@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 const API_KEY = process.env.RIOT_API_KEY;
 
 // 🔥 RiotID → PUUID
