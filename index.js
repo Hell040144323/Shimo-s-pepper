@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Events ,Partials} = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
 const fs = require('fs');
 
 const commands = new Map();
@@ -15,9 +15,9 @@ for (const file of commandFiles) {
 
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds, 
-    GatewayIntentBits.GuildMessages, 
-    GatewayIntentBits.MessageContent, 
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions
   ],
   partials: [
@@ -72,24 +72,24 @@ client.on(Events.InteractionCreate, async interaction => {
     // =========================
     if (interaction.isModalSubmit()) {
 
-  // register専用
-    if (interaction.customId === 'lol-register') {
+      // register専用
+      if (interaction.customId === 'lol-register') {
         const command = commands.get('lol-register');
         if (command && command.handleModal) {
-            await command.handleModal(interaction);
+          await command.handleModal(interaction);
         }
         return;
-    }
+      }
 
-  // lol-me編集
-    if (interaction.customId === 'lol-edit-modal') {
+      // lol-me編集
+      if (interaction.customId === 'lol-edit-modal') {
         const command = commands.get('lol-me');
         if (command && command.handleModal) {
-            await command.handleModal(interaction);
+          await command.handleModal(interaction);
         }
         return;
+      }
     }
-}
     // =========================
     // ボタン
     // =========================
@@ -131,18 +131,55 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
+
   if (user.bot) return;
+
+  if (reaction.partial) await reaction.fetch();
 
   const data = recruitments.get(reaction.message.id);
   if (!data) return;
+
   if (!data.paraticipants.includes(user.id)) {
     data.paraticipants.push(user.id);
   }
-  if (data.paraticipants.length >= data.max) {
-    await reaction.message.channel.send('募集が定員に達しました！');
-    const owner = await reaction.message.guild.members.fetch(data.ownerId);
-    await owner.send(`参加者:\n${data.paraticipants.map(id => `<@${id}>`).join('\n')}`);
 
+  const embed = new EmbedBuilder()
+    .setTitle('🎮LoL募集')
+    .setDescription(`参加するにはリアクションを押してください`)
+    .addFields(
+      { name: '募集人数', value: interaction.options.getString('count'), inline: true },
+      { name: '募集主', value: `<@${interaction.user.id}>`, inline: true },
+      { name: '現在の参加者数', value: `${data.paraticipants.length}/${data.max}`, inline: true }
+    )
+    .setColor(0x00AE86);
+
+  await reaction.message.edit({ embeds: [embed] });
+
+  if (data.paraticipants.length >= data.max) {
+
+    const finishEmbed = new EmbedBuilder()
+      .setTitle('✅募集締め切り')
+      .setDescription(`募集が定員に達したため締め切られました`)
+      .setColor(0xff0000);
+    await reaction.message.react({ embeds: [finishEmbed] });
+
+    try {
+      await data.interaction.followUp({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('参加者リスト')
+            .addFields({
+              name: '参加者',
+              value: data.paraticipants.map(id => `<@${id}>`).join('\n')
+            })
+            .setColor(0x00AE86)
+        ],
+        ephemeral: true
+      });
+    } catch (error) {
+      console.error('interection期限切れ:', error);
+    }
+    await reavtion.message.delete();
     recruitments.delete(reaction.message.id);
   }
 });
