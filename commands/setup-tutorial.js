@@ -13,6 +13,7 @@ module.exports = {
   },
 
   async execute(interaction) {
+    
 
     const button = new ButtonBuilder()
       .setCustomId('start-register')
