@@ -17,11 +17,12 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('LoL募集')
-            .setDescription('参加するにはリアクションを押してください')
+            .setDescription(`参加するにはリアクションを押してください\n募集人数: ${interaction.options.getString('count')}人`)
             .setColor(0x00AE86);
-        await interaction.reply({
+        const message = await interaction.reply({
             embeds: [embed],
-            ephemeral: false
+            fetchReply: true
         });
+        await message.react('✅');
     }
 };

@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Events } = require('discord.js');
 const fs = require('fs');
 
 const commands = new Map();
+const recruitments = new Map(); 
 
 // コマンド読み込み
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -11,8 +12,24 @@ for (const file of commandFiles) {
   commands.set(command.data.name, command);
 }
 
+rrecruitments.set(massage.id, {
+  ownerId: interaction.user.id,
+  max:count,
+  paraticipants: []
+});
+
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds, 
+    GatewayIntentBits.GuildMessages, 
+    GatewayIntentBits.MessageContent, 
+    GatewayIntentBits.GuildMessageReactions
+  ],
+  partials: [
+    partials.Message,
+    partials.Channel,
+    partials.Reaction
+  ]
 });
 
 client.commands = commands; // コマンドをクライアントにセット
@@ -105,6 +122,9 @@ client.on(Events.InteractionCreate, async interaction => {
       }
     }
 
+
+
+
   } catch (error) {
     console.error(error);
 
@@ -113,6 +133,22 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       await interaction.reply({ content: 'エラーが発生しました', ephemeral: true });
     }
+  }
+});
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  if (user.bot) return;
+
+  const data = recruitments.get(reaction.message.id);
+  if (!data) return;
+  if (!data.paraticipants.includes(user.id)) {
+    data.paraticipants.push(user.id);
+  }
+  if (data.paraticipants.length >= data.max) {
+    await reaction.message.channel.send('募集が定員に達しました！');
+    const owner = await reaction.message.guild.members.fetch(data.ownerId);
+    await owner.send(`参加者:\n${data.paraticipants.map(id => `<@${id}>`).join('\n')}`);
+
+    recruitments.delete(reaction.message.id);
   }
 });
 client.login(process.env.DISCORD_BOT_TOKEN);

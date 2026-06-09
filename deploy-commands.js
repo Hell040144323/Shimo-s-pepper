@@ -54,6 +54,12 @@ const commands = [
     new SlashCommandBuilder()
     .setName('create-recruitment')
     .setDescription('LoL募集の埋め込みを作成するコマンド（管理者用）')
+    .addStringOption(option =>
+      option
+        .setName('count')
+        .setDescription('募集人数')
+        .setRequired(true)
+    )
 
 ].map(command => command.toJSON());
 

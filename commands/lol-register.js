@@ -25,6 +25,14 @@ module.exports = {
   },
 
   async execute(interaction) {
+
+    if (!interaction.member.permissions.has('Administrator')) {
+      return interaction.reply({
+        content: 'このコマンドは管理者のみ使用できます',
+        ephemeral: true
+      });
+    }
+
     const modal = new ModalBuilder()
       .setCustomId('lol-register')
       .setTitle('サモナーネーム登録');
@@ -113,41 +121,41 @@ module.exports = {
 
     return true;
   },
-async handleSelect(interaction) {
-  if (!interaction.customId.startsWith('lane-final-')) return false;
+  async handleSelect(interaction) {
+    if (!interaction.customId.startsWith('lane-final-')) return false;
 
-  const [, , userId, ...rest] = interaction.customId.split('-');
-  const type = rest.pop();
-  const lolId = rest.join('-');
-  const lanes = interaction.values;
-  const guildId = interaction.guild.id;
+    const [, , userId, ...rest] = interaction.customId.split('-');
+    const type = rest.pop();
+    const lolId = rest.join('-');
+    const lanes = interaction.values;
+    const guildId = interaction.guild.id;
 
-  await pool.query(
-    `INSERT INTO lol_users (guild_id, user_id, lol_id, public, lanes)
+    await pool.query(
+      `INSERT INTO lol_users (guild_id, user_id, lol_id, public, lanes)
      VALUES ($1, $2, $3, $4, $5)
      ON CONFLICT (guild_id, user_id)
      DO UPDATE SET lol_id = $3, public = $4, lanes = $5`,
-    [guildId, userId, lolId, type === 'public', lanes]
-  );
+      [guildId, userId, lolId, type === 'public', lanes]
+    );
 
-  const member = await interaction.guild.members.fetch(interaction.user.id);
+    const member = await interaction.guild.members.fetch(interaction.user.id);
 
-  const result = await pool.query(
-  'SELECT role_id FROM guild_settings WHERE guild_id = $1',
-  [guildId]
-);
+    const result = await pool.query(
+      'SELECT role_id FROM guild_settings WHERE guild_id = $1',
+      [guildId]
+    );
 
-const roleId = result.rows[0]?.role_id;
+    const roleId = result.rows[0]?.role_id;
 
-if (roleId && !member.roles.cache.has(roleId)) {
-  await member.roles.add(roleId);
-}
+    if (roleId && !member.roles.cache.has(roleId)) {
+      await member.roles.add(roleId);
+    }
 
-  await interaction.reply({
-    content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,
-    ephemeral: true
-  });
+    await interaction.reply({
+      content: `登録完了！\nID: ${lolId}\nレーン: ${lanes.join(', ')}`,
+      ephemeral: true
+    });
 
-  return true;
-}
+    return true;
+  }
 };
