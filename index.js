@@ -139,6 +139,11 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const data = recruitments.get(reaction.message.id);
   if (!data) return;
 
+  if(user.id === data.ownerId) {
+    await reaction.users.remove(user.id);
+    return;
+  };
+
   // 🔥 参加追加
   if (!data.participants.includes(user.id)) {
     data.participants.push(user.id);
@@ -166,10 +171,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     const finishEmbed = new EmbedBuilder()
       .setTitle('✅ 募集締め切り')
       .setDescription('募集が定員に達しました')
-      .addFields({
-        name: '参加者',
-        value: data.participants.map(id => `<@${id}>`).join('\n')
-      })
       .setColor(0xff0000);
 
     await reaction.message.reply({
@@ -203,5 +204,34 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
     recruitments.delete(reaction.message.id);
   }
+});
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
+
+  if (user.bot) return;
+
+  if (reaction.partial) await reaction.fetch();
+
+  const data = recruitments.get(reaction.message.id);
+  if (!data) return;
+
+  // 🔥 参加してなかったら無視
+  if (!data.participants.includes(user.id)) return;
+
+  // 🔥 削除
+  data.participants = data.participants.filter(id => id !== user.id);
+
+  // 🔥 Embed更新
+  const embed = new EmbedBuilder()
+    .setTitle('🎮 LoL募集')
+    .setDescription('参加するにはリアクションを押してください')
+    .addFields(
+      { name: '募集人数', value: `${data.max}人`, inline: true },
+      { name: '募集主', value: `<@${data.ownerId}>`, inline: true },
+      { name: '現在の参加者数', value: `${data.participants.length}/${data.max}`, inline: true }
+    )
+    .setColor(0x00AE86);
+
+  await reaction.message.edit({ embeds: [embed] });
+
 });
 client.login(process.env.DISCORD_BOT_TOKEN);
