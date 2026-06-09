@@ -14,6 +14,7 @@ module.exports = {
         }
         const guildId = interaction.guild.id;
 
+
         const result = await pool.query(
             `SELECT role_id FROM guild_settings WHERE guild_id = $1`,
             [guildId]
@@ -25,7 +26,7 @@ module.exports = {
 
         if (roleId) {
             const role = interaction.guild.roles.cache.get(roleId);
-            roleText = role ? `<@${roleId}>` : '設定されたロールが見つかりません';
+            roleText = role ? `<@&${roleId}>` : '設定されたロールが見つかりません';
         }
 
         const embed = new EmbedBuilder()
