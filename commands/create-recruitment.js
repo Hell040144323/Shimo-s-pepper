@@ -20,7 +20,11 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('🎮LoL募集')
             .setDescription(`参加するにはリアクションを押してください`)
-            .addFields({name : '募集人数', value: interaction.options.getString('count'), inline: true})
+            .addFields(
+                {name : '募集人数', value: interaction.options.getString('count'), inline: true},
+                {name : '募集主', value: `<@${interaction.user.id}>`, inline: true},
+                {name : '現在の参加者数', value: `${data.paraticipants.length}/${data.max}`, inline: true}
+            )
             .setColor(0x00AE86);
         const message = await interaction.reply({
             content: '@everyone',
