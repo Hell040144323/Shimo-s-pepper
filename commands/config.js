@@ -2,6 +2,9 @@ const { SlashCommandBuilder,EmbedBuilder } = require('discord.js');
 const pool = require('../db');
 
 module.exports = {
+    data: {
+    name: 'config'
+  },
     async execute(interaction) {
         if (!interaction.member.permissions.has('Administrator')) {
             return interaction.reply({
