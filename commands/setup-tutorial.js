@@ -14,6 +14,12 @@ module.exports = {
 
   async execute(interaction) {
     
+    if (!interaction.member.permissions.has('Administrator')) {
+    return interaction.reply({
+      content: 'このコマンドは管理者のみ使用できます',
+      ephemeral: true
+    });
+  }
 
     const button = new ButtonBuilder()
       .setCustomId('start-register')
