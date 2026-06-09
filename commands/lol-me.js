@@ -48,6 +48,10 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
+    const{getRankFromRiotId}=require('../utils/lolApi');
+
+    const rank = await getRankFromRiotId(user.lol_id);
+
     const embed = new EmbedBuilder()
       .setTitle('あなたのLoL ID')
       .setColor(userData.public ? 0x00ff00 : 0xff0000)
@@ -57,6 +61,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
+          `ランク:${rank}\n`+
           `${status}`
       });
 
@@ -249,6 +254,10 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
+    const{getRankFromRiotId}=require('../utils/lolApi');
+    const rank = await getRankFromRiotId(user.lol_id);
+
+
     const embed = new EmbedBuilder()
       .setTitle('更新完了')
       .setColor(userData.public ? 0x00ff00 : 0xff0000)
@@ -258,6 +267,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
+          `ランク:${rank}\n`+
           `${status}`
       });
 
