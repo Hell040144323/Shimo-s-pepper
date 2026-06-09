@@ -12,7 +12,7 @@ for (const file of commandFiles) {
   commands.set(command.data.name, command);
 }
 
-rrecruitments.set(massage.id, {
+recruitments.set(message.id, {
   ownerId: interaction.user.id,
   max:count,
   paraticipants: []
