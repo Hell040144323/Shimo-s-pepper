@@ -37,12 +37,6 @@ module.exports = {
             allowMentions: { parse: ['everyone'] }
         });
 
-        await interaction.editReply({
-            content: '募集を作成しました',
-            embeds: [],
-            components: []
-        });
-        
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
             interaction: interaction,
@@ -50,8 +44,13 @@ module.exports = {
             participants: []
         });
         await message.react('✅');
-
-
+        
+        await interaction.editReply({
+        content: '募集を作成しました',
+        embeds: [],
+            components: []
+        });
+        
     },
     async handleButton(interaction) {
 
