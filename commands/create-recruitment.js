@@ -23,7 +23,7 @@ module.exports = {
             .addFields(
                 {name : '募集人数', value: interaction.options.getString('count'), inline: true},
                 {name : '募集主', value: `<@${interaction.user.id}>`, inline: true},
-                {name : '現在の参加者数', value: `${data.paraticipants.length}/${data.max}`, inline: true}
+                {name : '現在の参加者数', value: `0/${interaction.options.getString('count')}`, inline: true}
             )
             .setColor(0x00AE86);
         const message = await interaction.reply({
