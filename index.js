@@ -139,47 +139,68 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const data = recruitments.get(reaction.message.id);
   if (!data) return;
 
-  if (!data.paraticipants.includes(user.id)) {
-    data.paraticipants.push(user.id);
+  // 🔥 参加追加
+  if (!data.participants.includes(user.id)) {
+    data.participants.push(user.id);
   }
 
+  // 🔥 Embed更新
   const embed = new EmbedBuilder()
-    .setTitle('🎮LoL募集')
-    .setDescription(`参加するにはリアクションを押してください`)
+    .setTitle('🎮 LoL募集')
+    .setDescription('参加するにはリアクションを押してください')
     .addFields(
-      { name: '募集人数', value: interaction.options.getString('count'), inline: true },
-      { name: '募集主', value: `<@${interaction.user.id}>`, inline: true },
-      { name: '現在の参加者数', value: `${data.paraticipants.length}/${data.max}`, inline: true }
+      { name: '募集人数', value: `${data.max}人`, inline: true },
+      { name: '募集主', value: `<@${data.ownerId}>`, inline: true },
+      { name: '現在の参加者数', value: `${data.participants.length}/${data.max}`, inline: true }
     )
     .setColor(0x00AE86);
 
   await reaction.message.edit({ embeds: [embed] });
 
-  if (data.paraticipants.length >= data.max) {
+  // 🔥 定員到達
+  if (data.participants.length >= data.max) {
 
+    // =========================
+    // 全員に見える締め切り
+    // =========================
     const finishEmbed = new EmbedBuilder()
-      .setTitle('✅募集締め切り')
-      .setDescription(`募集が定員に達したため締め切られました`)
+      .setTitle('✅ 募集締め切り')
+      .setDescription('募集が定員に達しました')
+      .addFields({
+        name: '参加者',
+        value: data.participants.map(id => `<@${id}>`).join('\n')
+      })
       .setColor(0xff0000);
-    await reaction.message.react({ embeds: [finishEmbed] });
 
+    await reaction.message.reply({
+      embeds: [finishEmbed]
+    });
+
+    // =========================
+    // 募集主だけに表示
+    // =========================
     try {
       await data.interaction.followUp({
         embeds: [
           new EmbedBuilder()
-            .setTitle('参加者リスト')
+            .setTitle('📋 参加者リスト（あなただけ表示）')
             .addFields({
               name: '参加者',
-              value: data.paraticipants.map(id => `<@${id}>`).join('\n')
+              value: data.participants.map(id => `<@${id}>`).join('\n')
             })
             .setColor(0x00AE86)
         ],
         ephemeral: true
       });
     } catch (error) {
-      console.error('interection期限切れ:', error);
+      console.log('interaction期限切れ');
     }
-    await reavtion.message.delete();
+
+    // =========================
+    // 募集削除
+    // =========================
+    await reaction.message.delete();
+
     recruitments.delete(reaction.message.id);
   }
 });
