@@ -103,7 +103,7 @@ module.exports = {
         recruitments.delete(message.id);
       }
 
-    }, 1000);
+    }, 10000);
 
     recruitments.set(message.id, {
       ownerId: interaction.user.id,
