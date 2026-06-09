@@ -34,7 +34,7 @@ module.exports = {
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
             max: interaction.options.getString('count'),
-            paraticipants: []
+            participants: []
         });
         await message.react('✅');
     }
