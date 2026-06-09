@@ -131,107 +131,18 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
-
-  if (user.bot) return;
-
-  if (reaction.partial) await reaction.fetch();
-
-  const data = recruitments.get(reaction.message.id);
-  if (!data) return;
-
-  if(user.id === data.ownerId) {
-    await reaction.users.remove(user.id);
-    return;
-  };
-
-  // 🔥 参加追加
-  if (!data.participants.includes(user.id)) {
-    data.participants.push(user.id);
-  }
-
-  // 🔥 Embed更新
-  const embed = new EmbedBuilder()
-    .setTitle('🎮 LoL募集')
-    .setDescription('参加するにはリアクションを押してください')
-    .addFields(
-      { name: '募集人数', value: `${data.max}人`, inline: true },
-      { name: '募集主', value: `<@${data.ownerId}>`, inline: true },
-      { name: '現在の参加者数', value: `${data.participants.length}/${data.max}`, inline: true }
-    )
-    .setColor(0x00AE86);
-
-  await reaction.message.edit({ embeds: [embed] });
-
-  // 🔥 定員到達
-  if (data.participants.length >= data.max) {
-
-    // =========================
-    // 全員に見える締め切り
-    // =========================
-    const finishEmbed = new EmbedBuilder()
-      .setTitle('✅ 募集締め切り')
-      .setDescription('募集が定員に達しました')
-      .setColor(0xff0000);
-
-    await reaction.message.reply({
-      embeds: [finishEmbed]
-    });
-
-    // =========================
-    // 募集主だけに表示
-    // =========================
-    try {
-      await data.interaction.followUp({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle('📋 参加者リスト（あなただけ表示）')
-            .addFields({
-              name: '参加者',
-              value: data.participants.map(id => `<@${id}>`).join('\n')
-            })
-            .setColor(0x00AE86)
-        ],
-        ephemeral: true
-      });
-    } catch (error) {
-      console.log('interaction期限切れ');
+  for (const command of commands.values()) {
+    if (command.handleReactionAdd) {
+      await command.handleReactionAdd(reaction, user);
     }
-
-    // =========================
-    // 募集削除
-    // =========================
-    await reaction.message.delete();
-
-    recruitments.delete(reaction.message.id);
   }
 });
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
 
-  if (user.bot) return;
-
-  if (reaction.partial) await reaction.fetch();
-
-  const data = recruitments.get(reaction.message.id);
-  if (!data) return;
-
-  // 🔥 参加してなかったら無視
-  if (!data.participants.includes(user.id)) return;
-
-  // 🔥 削除
-  data.participants = data.participants.filter(id => id !== user.id);
-
-  // 🔥 Embed更新
-  const embed = new EmbedBuilder()
-    .setTitle('🎮 LoL募集')
-    .setDescription('参加するにはリアクションを押してください')
-    .addFields(
-      { name: '募集人数', value: `${data.max}人`, inline: true },
-      { name: '募集主', value: `<@${data.ownerId}>`, inline: true },
-      { name: '現在の参加者数', value: `${data.participants.length}/${data.max}`, inline: true }
-    )
-    .setColor(0x00AE86);
-
-  await reaction.message.edit({ embeds: [embed] });
-
+  for (const command of commands.values()) {
+    if (command.handleReactionRemove) {
+      await command.handleReactionRemove(reaction, user);
+    }
+  }
 });
 client.login(process.env.DISCORD_BOT_TOKEN);
