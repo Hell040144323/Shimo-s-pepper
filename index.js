@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
 const commands = new Map();

@@ -33,7 +33,8 @@ module.exports = {
         });
         recruitments.set(message.id, {
             ownerId: interaction.user.id,
-            max: interaction.options.getString('count'),
+            interaction: interaction,
+            max: Number(interaction.options.getString('count')),
             participants: []
         });
         await message.react('✅');
