@@ -49,7 +49,11 @@ const commands = [
   ),
   new SlashCommandBuilder()
     .setName('config')
-    .setDescription('セットアップチュートリアルを表示するコマンド')
+    .setDescription('セットアップチュートリアルを表示するコマンド'),
+
+    new SlashCommandBuilder()
+    .setName('create-recruitment')
+    .setDescription('LoL募集の埋め込みを作成するコマンド（管理者用）')
 
 ].map(command => command.toJSON());
 
