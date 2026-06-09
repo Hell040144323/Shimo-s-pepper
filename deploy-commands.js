@@ -39,8 +39,14 @@ const commands = [
     .setName('setup-tutorial')
     .setDescription('セットアップチュートリアルを表示するコマンド'),
   new SlashCommandBuilder()
-    .setName('set-role')
-    .setDescription('登録完了後に付与するロールを設定（管理者用）')
+  .setName('set-role')
+  .setDescription('登録完了後に付与するロールを設定（管理者用）')
+  .addRoleOption(option =>
+    option
+      .setName('role')
+      .setDescription('付与するロール')
+      .setRequired(true)
+  )
 
 ].map(command => command.toJSON());
 
