@@ -23,6 +23,11 @@ module.exports = {
             embeds: [embed],
             fetchReply: true
         });
+        recruitments.set(message.id, {
+            ownerId: interaction.user.id,
+            max: interaction.options.getString('count'),
+            paraticipants: []
+        });
         await message.react('✅');
     }
 };
