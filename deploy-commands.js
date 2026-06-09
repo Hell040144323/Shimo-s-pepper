@@ -46,7 +46,10 @@ const commands = [
       .setName('role')
       .setDescription('付与するロール')
       .setRequired(true)
-  )
+  ),
+  new SlashCommandBuilder()
+    .setName('config')
+    .setDescription('セットアップチュートリアルを表示するコマンド')
 
 ].map(command => command.toJSON());
 
