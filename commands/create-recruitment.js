@@ -26,9 +26,18 @@ module.exports = {
                 { name: '現在の参加者数', value: `0/${interaction.options.getString('count')}`, inline: true }
             )
             .setColor(0x00AE86);
+
+        const cancelButton = new ButtonBuilder()
+            .setCustomId('recruit-cancel')
+            .setLabel('✖ 募集をキャンセル')
+            .setStyle(ButtonStyle.Danger);
+
+        const row = new ActionRowBuilder().addComponents(cancelButton);
+
         const message = await interaction.reply({
             content: '@everyone',
             embeds: [embed],
+            components: [row],
             fetchReply: true
         });
         recruitments.set(message.id, {
