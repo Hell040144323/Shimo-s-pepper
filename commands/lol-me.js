@@ -11,7 +11,7 @@ const {
 
 const pool = require('../db');
 
-const{getRankFromRiotId}=require('../utils/lolApi');
+const { getRankFromRiotId } = require('../utils/lolApi');
 
 const laneIcons = {
   TOP: '<:top:1513177035877519541>',
@@ -61,7 +61,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
-          `ランク:${rank}\n`+
+          `ランク:${rank}\n` +
           `${status}`
       });
 
@@ -135,6 +135,25 @@ module.exports = {
 
       // 名前変更
       if (value === 'name') {
+
+        // 🔥 DBから現在の値取得
+        const result = await pool.query(
+          `SELECT * FROM lol_users WHERE guild_id = $1 AND user_id = $2`,
+          [interaction.guild.id, interaction.user.id]
+        );
+
+        const userData = result.rows[0];
+
+        let name = '';
+        let tag = '';
+
+        if (userData?.lol_id) {
+          const parts = userData.lol_id.split('#');
+          name = parts[0] || '';
+          tag = parts[1] || '';
+        }
+
+        // 🔥 モーダル作成
         const modal = new ModalBuilder()
           .setCustomId('lol-me-name-modal')
           .setTitle('名前変更');
@@ -142,12 +161,14 @@ module.exports = {
         const nameInput = new TextInputBuilder()
           .setCustomId('name')
           .setLabel('サモナーネーム')
-          .setStyle(TextInputStyle.Short);
+          .setStyle(TextInputStyle.Short)
+          .setValue(name); // 👈これが重要
 
         const tagInput = new TextInputBuilder()
           .setCustomId('tag')
-          .setLabel('タグ（例:1234）')
-          .setStyle(TextInputStyle.Short);
+          .setLabel('タグ（例:JP1）')
+          .setStyle(TextInputStyle.Short)
+          .setValue(tag); // 👈これも
 
         modal.addComponents(
           new ActionRowBuilder().addComponents(nameInput),
@@ -226,17 +247,34 @@ module.exports = {
 
     console.log("LOL-ME");
 
-    const name = interaction.fields.getTextInputValue('name');
-    const tag = interaction.fields.getTextInputValue('tag');
+    try {
+      // 🔥 入力取得
+      const name = interaction.fields.getTextInputValue('name');
+      const tag = interaction.fields.getTextInputValue('tag');
 
-    const fullId = `${name}#${tag}`;
+      const fullId = `${name}#${tag}`;
 
-    await pool.query(
-      `UPDATE lol_users SET lol_id = $1 WHERE guild_id = $2 AND user_id = $3`,
-      [fullId, interaction.guild.id, interaction.user.id]
-    );
+      // 🔥 更新
+      await pool.query(
+        `UPDATE lol_users SET lol_id = $1 WHERE guild_id = $2 AND user_id = $3`,
+        [fullId, interaction.guild.id, interaction.user.id]
+      );
 
-    return this.showUpdatedCard(interaction);
+      // 🔥 更新後表示
+      await this.showUpdatedCard(interaction);
+
+      return true;
+
+    } catch (error) {
+      console.error(error);
+
+      await interaction.reply({
+        content: '更新中にエラーが発生しました',
+        ephemeral: true
+      });
+
+      return true;
+    }
   },
 
   // =========================
@@ -268,7 +306,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
-          `ランク:${rank}\n`+
+          `ランク:${rank}\n` +
           `${status}`
       });
 
