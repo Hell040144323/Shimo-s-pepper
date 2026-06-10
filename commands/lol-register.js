@@ -57,6 +57,8 @@ module.exports = {
     
     if (interaction.customId !== 'lol-register') return false;
 
+    console.log("Register");
+
     const lolId = interaction.fields.getTextInputValue('lolIdInput');
     const tag = interaction.fields.getTextInputValue('lolTagInput');
 
