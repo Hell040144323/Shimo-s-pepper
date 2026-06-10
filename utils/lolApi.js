@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 const API_KEY = process.env.RIOT_API_KEY;
 
 async function getRankFromRiotId(riotId) {
@@ -32,6 +30,10 @@ async function getRankFromRiotId(riotId) {
     const solo = ranks.find(r => r.queueType === 'RANKED_SOLO_5x5');
 
     if (!solo) return "ランクなし";
+
+    console.log(account);
+    console.log(summoner);
+    console.log(ranks);
 
     return `${solo.tier} ${solo.rank} (${solo.leaguePoints}LP)`;
 
