@@ -224,6 +224,8 @@ module.exports = {
   async handleModal(interaction) {
     if (interaction.customId !== 'lol-me-name-modal') return false;
 
+    console.log("LOL-ME");
+
     const name = interaction.fields.getTextInputValue('name');
     const tag = interaction.fields.getTextInputValue('tag');
 
