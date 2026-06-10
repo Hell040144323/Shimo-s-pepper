@@ -20,7 +20,7 @@ async function getRankFromRiotId(riotId) {
 );
     const summoner = await summonerRes.json();
     console.log("Summoner:",summoner);
-    if (!summoner.puuid) return "サモナー取得失敗";
+    if (!summoner.puuidid) return "サモナー取得失敗";
 
     // ③ ランク取得
     const rankRes = await fetch(
