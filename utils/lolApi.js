@@ -11,7 +11,7 @@ async function getRankFromRiotId(riotId) {
     );
 
     const account = await accountRes.json();
-    if (!account.puuid) return "取得失敗";
+    if (!account.puuid) return "アカウント取得失敗";
 
     // ② Summoner取得
     const summonerRes = await fetch(
@@ -19,7 +19,7 @@ async function getRankFromRiotId(riotId) {
     );
 
     const summoner = await summonerRes.json();
-    if (!summoner.id) return "取得失敗";
+    if (!summoner.id) return "サモナー取得失敗";
 
     // ③ ランク取得
     const rankRes = await fetch(
