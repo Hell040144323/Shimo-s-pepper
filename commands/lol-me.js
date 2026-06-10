@@ -222,7 +222,7 @@ module.exports = {
   // モーダル処理
   // =========================
   async handleModal(interaction) {
-    if (interaction.customId !== 'lol-me-name-modal') return;
+    if (interaction.customId !== 'lol-me-name-modal') return false;
 
     const name = interaction.fields.getTextInputValue('name');
     const tag = interaction.fields.getTextInputValue('tag');

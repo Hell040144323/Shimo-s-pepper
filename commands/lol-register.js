@@ -54,6 +54,9 @@ module.exports = {
   },
 
   async handleModal(interaction) {
+    
+    if (interaction.customId !== 'lol-register') return false;
+
     const lolId = interaction.fields.getTextInputValue('lolIdInput');
     const tag = interaction.fields.getTextInputValue('lolTagInput');
 
