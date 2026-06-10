@@ -1,8 +1,8 @@
 const API_KEY = process.env.RIOT_API_KEY;
 
 async function getRankFromRiotId(riotId) {
-  console.log("getRank");
   try {
+    console.log("getRank");
     const [gameName, tagLine] = riotId.split('#');
 
     // ① PUUID取得
