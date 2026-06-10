@@ -11,14 +11,15 @@ async function getRankFromRiotId(riotId) {
     );
 
     const account = await accountRes.json();
+    console.log("Account:",account);
     if (!account.puuid) return "アカウント取得失敗";
 
     // ② Summoner取得
     const summonerRes = await fetch(
-      `https://jp1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${account.puuid}?api_key=${API_KEY}`
-    );
-
+  `https://jp1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${account.puuid}?api_key=${API_KEY}`
+);
     const summoner = await summonerRes.json();
+    console.log("Summoner:",summoner);
     if (!summoner.id) return "サモナー取得失敗";
 
     // ③ ランク取得
@@ -28,10 +29,6 @@ async function getRankFromRiotId(riotId) {
 
 
     const ranks = await rankRes.json();
-
-    console.log(account);
-    console.log(summoner);
-    console.log(ranks);
 
     const solo = ranks.find(r => r.queueType === 'RANKED_SOLO_5x5');
 
