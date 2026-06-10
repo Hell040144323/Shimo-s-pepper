@@ -25,15 +25,17 @@ async function getRankFromRiotId(riotId) {
       `https://jp1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?api_key=${API_KEY}`
     );
 
+
     const ranks = await rankRes.json();
+
+    console.log(account);
+    console.log(summoner);
+    console.log(ranks);
 
     const solo = ranks.find(r => r.queueType === 'RANKED_SOLO_5x5');
 
     if (!solo) return "ランクなし";
 
-    console.log(account);
-    console.log(summoner);
-    console.log(ranks);
 
     return `${solo.tier} ${solo.rank} (${solo.leaguePoints}LP)`;
 
