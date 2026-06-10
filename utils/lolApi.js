@@ -27,6 +27,7 @@ async function getRankFromRiotId(riotId) {
       `https://jp1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?api_key=${API_KEY}`
     );
 
+    console.log("Rank raw:", ranks);
 
     const ranks = await rankRes.json();
 
