@@ -1,6 +1,7 @@
 const API_KEY = process.env.RIOT_API_KEY;
 
 async function getRankFromRiotId(riotId) {
+  console.log("getRank");
   try {
     const [gameName, tagLine] = riotId.split('#');
 
