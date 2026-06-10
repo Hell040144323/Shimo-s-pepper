@@ -51,7 +51,7 @@ module.exports = {
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
     const rank = await getRankFromRiotId(userData.lol_id);
-    console.log("ゲットランク使用後");
+    console.log(`${rank}`);
 
     const embed = new EmbedBuilder()
       .setTitle('あなたのLoL ID')
