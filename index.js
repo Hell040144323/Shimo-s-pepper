@@ -72,22 +72,13 @@ client.on(Events.InteractionCreate, async interaction => {
     // =========================
     if (interaction.isModalSubmit()) {
 
-      // register専用
-      if (interaction.customId === 'lol-register') {
-        const command = commands.get('lol-register');
-        if (command && command.handleModal) {
-          await command.handleModal(interaction);
+      if (interaction.isModalSubmit()) {
+        for (const command of commands.values()) {
+          if (command.handleModal) {
+            const handled = await command.handleModal(interaction);
+            if (handled) return;
+          }
         }
-        return;
-      }
-
-      // lol-me編集
-      if (interaction.customId === 'lol-edit-modal') {
-        const command = commands.get('lol-me');
-        if (command && command.handleModal) {
-          await command.handleModal(interaction);
-        }
-        return;
       }
     }
     // =========================
