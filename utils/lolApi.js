@@ -24,7 +24,7 @@ async function getRankFromRiotId(riotId) {
 
     // ③ ランク取得
     const rankRes = await fetch(
-      `https://jp1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?api_key=${API_KEY}`
+      `https://jp1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.puuidid}?api_key=${API_KEY}`
     );
 
     console.log("Rank raw:", ranks);
