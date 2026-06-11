@@ -54,7 +54,7 @@ async function getRankFromRiotId(riotId) {
 
     if (!solo) return "ソロランクなし";
 
-    return ranks;
+    return solo;
 
   } catch (err) {
     console.error(err);
