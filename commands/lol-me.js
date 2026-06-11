@@ -52,7 +52,7 @@ module.exports = {
     if (typeof rankData === 'object') {
       const icon = rankIcons[rankData.tier] || '';
       rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
-    }else{
+    } else {
       rankText = rankData;
     }
 
@@ -298,7 +298,16 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
-    const rank = await getRankFromRiotId(userData.lol_id);
+    const rankData = await getRankFromRiotId(userData.lol_id);
+
+    let rankText = "取得失敗";
+
+    if (typeof rankData === 'object') {
+      const icon = rankIcons[rankData.tier] || '';
+      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
+    } else {
+      rankText = rankData;
+    }
 
 
     const embed = new EmbedBuilder()
