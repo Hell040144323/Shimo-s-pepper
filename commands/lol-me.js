@@ -46,12 +46,14 @@ module.exports = {
 
     const rankData = await getRankFromRiotId(userData.lol_id);
     console.log(rankData);
-    
+
     let rankText = "取得失敗";
 
     if (typeof rankData === 'object') {
       const icon = rankIcons[rankData.tier] || '';
       rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
+    }else{
+      rankText = rankData;
     }
 
     const embed = new EmbedBuilder()
