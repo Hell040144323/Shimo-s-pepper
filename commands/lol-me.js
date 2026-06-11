@@ -319,7 +319,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
-          `ランク:${rank}\n` +
+          `ランク:${rankText}\n` +
           `${status}`
       });
 
