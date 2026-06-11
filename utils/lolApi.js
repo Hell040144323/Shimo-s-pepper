@@ -34,17 +34,21 @@ async function getRankFromRiotId(riotId) {
 
     // ③ ランク取得（ここ重要）
     const rankRes = await fetch(
-      `https://jp1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?api_key=${API_KEY}`
+      `https://jp1.api.riotgames.com/lol/league/v4/entries/by-puuid/${account.puuid}?api_key=${API_KEY}`
     );
 
     const ranks = await rankRes.json();
     console.log("Rank raw:", ranks);
 
-    // 🔥 APIエラー
-    if (!Array.isArray(ranks)) return "ランク取得失敗";
+    // 🔥 エラー判定
+    if (!Array.isArray(ranks)) {
+      return "ランク取得失敗";
+    }
 
     // 🔥 未プレイ
-    if (ranks.length === 0) return "ランク未プレイ";
+    if (ranks.length === 0) {
+      return "ランク未プレイ";
+    }
 
     const solo = ranks.find(r => r.queueType === 'RANKED_SOLO_5x5');
 
