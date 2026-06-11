@@ -70,7 +70,11 @@ const commands = [
       option.setName('time')
         .setDescription('募集期間（分）')
         .setRequired(true)
-    )
+    ),
+
+    new SlashCommandBuilder()
+    .setName('lol-team')
+    .setDescription('LoLのチームを自動でバランス分けします')
 
 ].map(command => command.toJSON());
 

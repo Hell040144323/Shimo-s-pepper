@@ -1,0 +1,85 @@
+const { EmbedBuilder } = require('discord.js');
+const pool = require('../db');
+const { getRankFromRiotId } = require('../utils/lolApi');
+
+const rankValue = {
+  IRON: 1,
+  BRONZE: 2,
+  SILVER: 3,
+  GOLD: 4,
+  PLATINUM: 5,
+  EMERALD: 6,
+  DIAMOND: 7,
+  MASTER: 8,
+  GRANDMASTER: 9,
+  CHALLENGER: 10
+};
+
+module.exports = {
+  data: {
+    name: 'lol-team'
+  },
+
+  async execute(interaction) {
+
+    const result = await pool.query(
+      `SELECT * FROM lol_users WHERE guild_id = $1 AND public = true`,
+      [interaction.guild.id]
+    );
+
+    const users = result.rows;
+
+    if (users.length < 2) {
+      return interaction.reply("人数が足りません");
+    }
+
+    const players = await Promise.all(users.map(async (user) => {
+
+      const rankData = await getRankFromRiotId(user.lol_id);
+
+      let rankScore = 0;
+
+      if (typeof rankData === 'object') {
+        rankScore = (rankValue[rankData.tier] || 0) * 100;
+      }
+
+      return {
+        id: user.user_id,
+        name: user.lol_id,
+        score: rankScore // ← 今回はランク重視
+      };
+    }));
+
+    // 🔥 強い順
+    players.sort((a, b) => b.score - a.score);
+
+    let teamA = [];
+    let teamB = [];
+
+    let sumA = 0;
+    let sumB = 0;
+
+    for (const p of players) {
+      if (sumA <= sumB) {
+        teamA.push(p);
+        sumA += p.score;
+      } else {
+        teamB.push(p);
+        sumB += p.score;
+      }
+    }
+
+    const format = (team) =>
+      team.map(p => `<@${p.id}> (${p.score})`).join('\n');
+
+    const embed = new EmbedBuilder()
+      .setTitle('⚔️ バランスチーム分け')
+      .addFields(
+        { name: `🟥 Team A (${sumA})`, value: format(teamA), inline: true },
+        { name: `🟦 Team B (${sumB})`, value: format(teamB), inline: true }
+      )
+      .setColor(0x00AE86);
+
+    await interaction.reply({ embeds: [embed] });
+  }
+};
