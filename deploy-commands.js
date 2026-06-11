@@ -39,19 +39,19 @@ const commands = [
     .setName('setup-tutorial')
     .setDescription('セットアップチュートリアルを表示するコマンド'),
   new SlashCommandBuilder()
-  .setName('set-role')
-  .setDescription('登録完了後に付与するロールを設定（管理者用）')
-  .addRoleOption(option =>
-    option
-      .setName('role')
-      .setDescription('付与するロール')
-      .setRequired(true)
-  ),
+    .setName('set-role')
+    .setDescription('登録完了後に付与するロールを設定（管理者用）')
+    .addRoleOption(option =>
+      option
+        .setName('role')
+        .setDescription('付与するロール')
+        .setRequired(true)
+    ),
   new SlashCommandBuilder()
     .setName('config')
     .setDescription('セットアップチュートリアルを表示するコマンド'),
 
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
     .setName('create-recruitment')
     .setDescription('LoL募集の埋め込みを作成するコマンド（管理者用）')
     .addStringOption(option =>
@@ -72,9 +72,19 @@ const commands = [
         .setRequired(true)
     ),
 
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
     .setName('lol-team')
-    .setDescription('LoLのチームを自動でバランス分けします')
+    .setDescription('メンバーを指定してチーム分け')
+    .addUserOption(o => o.setName('user1').setDescription('プレイヤー').setRequired(true))
+    .addUserOption(o => o.setName('user2').setDescription('プレイヤー').setRequired(true))
+    .addUserOption(o => o.setName('user3').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user4').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user5').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user6').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user7').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user8').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user9').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user10').setDescription('プレイヤー'))
 
 ].map(command => command.toJSON());
 

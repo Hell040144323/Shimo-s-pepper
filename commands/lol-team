@@ -22,35 +22,73 @@ module.exports = {
 
   async execute(interaction) {
 
-    const result = await pool.query(
-      `SELECT * FROM lol_users WHERE guild_id = $1 AND public = true`,
-      [interaction.guild.id]
-    );
+    // =========================
+    // ① ユーザー取得
+    // =========================
+    const selectedUsers = [];
 
-    const users = result.rows;
-
-    if (users.length < 2) {
-      return interaction.reply("人数が足りません");
+    for (let i = 1; i <= 10; i++) {
+      const user = interaction.options.getUser(`user${i}`);
+      if (user) selectedUsers.push(user);
     }
 
-    const players = await Promise.all(users.map(async (user) => {
+    // =========================
+    // ② バリデーション
+    // =========================
+    if (selectedUsers.length < 2) {
+      return interaction.reply({ content: '2人以上指定してね', ephemeral: true });
+    }
 
-      const rankData = await getRankFromRiotId(user.lol_id);
+    if (selectedUsers.length % 2 !== 0) {
+      return interaction.reply({ content: '人数は偶数にしてね', ephemeral: true });
+    }
 
-      let rankScore = 0;
+    const unique = new Set(selectedUsers.map(u => u.id));
+    if (unique.size !== selectedUsers.length) {
+      return interaction.reply({ content: '同じ人が含まれてるよ', ephemeral: true });
+    }
 
-      if (typeof rankData === 'object') {
-        rankScore = (rankValue[rankData.tier] || 0) * 100;
+    await interaction.deferReply();
+
+    // =========================
+    // ③ DB取得
+    // =========================
+    const players = [];
+
+    for (const user of selectedUsers) {
+      const result = await pool.query(
+        `SELECT * FROM lol_users WHERE guild_id = $1 AND user_id = $2`,
+        [interaction.guild.id, user.id]
+      );
+
+      const userData = result.rows[0];
+
+      if (!userData) {
+        return interaction.editReply(`❌ <@${user.id}> は未登録`);
       }
 
-      return {
-        id: user.user_id,
-        name: user.lol_id,
-        score: rankScore // ← 今回はランク重視
-      };
-    }));
+      // =========================
+      // ④ ランク取得
+      // =========================
+      const rankData = await getRankFromRiotId(userData.lol_id);
 
-    // 🔥 強い順
+      let score = 0;
+
+      if (typeof rankData === 'object') {
+        const base = rankValue[rankData.tier] || 0;
+        score = base * 100 + (rankData.lp || 0);
+      }
+
+      players.push({
+        id: user.id,
+        name: userData.lol_id,
+        score
+      });
+    }
+
+    // =========================
+    // ⑤ チーム分け（ガチバランス）
+    // =========================
     players.sort((a, b) => b.score - a.score);
 
     let teamA = [];
@@ -69,17 +107,20 @@ module.exports = {
       }
     }
 
+    // =========================
+    // ⑥ 表示
+    // =========================
     const format = (team) =>
       team.map(p => `<@${p.id}> (${p.score})`).join('\n');
 
     const embed = new EmbedBuilder()
-      .setTitle('⚔️ バランスチーム分け')
+      .setTitle('⚔️ チーム分け（バランス）')
       .addFields(
         { name: `🟥 Team A (${sumA})`, value: format(teamA), inline: true },
         { name: `🟦 Team B (${sumB})`, value: format(teamB), inline: true }
       )
       .setColor(0x00AE86);
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   }
 };
