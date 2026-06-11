@@ -46,6 +46,7 @@ module.exports = {
 
     const rankData = await getRankFromRiotId(userData.lol_id);
     console.log(rankData);
+    
     let rankText = "取得失敗";
 
     if (typeof rankData === 'object') {
