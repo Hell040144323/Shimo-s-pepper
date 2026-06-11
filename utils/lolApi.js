@@ -54,7 +54,11 @@ async function getRankFromRiotId(riotId) {
 
     if (!solo) return "ソロランクなし";
 
-    return solo;
+    return {
+      tier: solo.tier,
+      rank: solo.rank,
+      lp: solo.leaguePoints
+    };
 
   } catch (err) {
     console.error(err);

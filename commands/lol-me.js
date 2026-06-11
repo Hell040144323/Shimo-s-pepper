@@ -51,7 +51,7 @@ module.exports = {
 
     if (typeof rankData === 'object') {
       const icon = rankIcons[rankData.tier] || '';
-      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.leaguePoints}LP)`;
+      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
     } else {
       rankText = rankData;
     }
@@ -304,7 +304,7 @@ module.exports = {
 
     if (typeof rankData === 'object') {
       const icon = rankIcons[rankData.tier] || '';
-      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.leaguePoints}LP)`;
+      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
     } else {
       rankText = rankData;
     }
