@@ -13,13 +13,7 @@ const pool = require('../db');
 
 const { getRankFromRiotId } = require('../utils/lolApi');
 
-const laneIcons = {
-  TOP: '<:top:1513177035877519541>',
-  JG: '<:jungle:1513177011445563402>',
-  MID: '<:mid:1513176990201544795>',
-  ADC: '<:bot:1513176967963480175>',
-  SUP: '<:support:1513176932966203627>'
-};
+const { laneIcons, rankIcons } = require('../config/icons');
 
 module.exports = {
   data: {
@@ -50,8 +44,17 @@ module.exports = {
 
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
-    const rank = await getRankFromRiotId(userData.lol_id);
-    console.log(`${rank}`);
+    const rankData = await getRankFromRiotId(userData.lol_id);
+    let rankText = "取得失敗";
+
+    if (typeof rankData === 'object') {
+
+      if (typeof rankData === 'object') {
+
+        const icon = rankIcons[rankData.tier] || '';
+        rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
+      }
+    }
 
     const embed = new EmbedBuilder()
       .setTitle('あなたのLoL ID')
@@ -62,7 +65,7 @@ module.exports = {
           `DiscordID: <@${interaction.user.id}>\n` +
           `サモナーネーム: ${userData.lol_id}\n` +
           `レーン: ${laneText}\n` +
-          `ランク:${rank}\n` +
+          `ランク:${rankText}\n` +
           `${status}`
       });
 

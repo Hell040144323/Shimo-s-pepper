@@ -8,13 +8,7 @@ const {
 
 const pool = require('../db');
 
-const laneIcons = {
-  TOP: '<:top:1513177035877519541>',
-  JG: '<:jungle:1513177011445563402>',
-  MID: '<:mid:1513176990201544795>',
-  ADC: '<:bot:1513176967963480175>',
-  SUP: '<:support:1513176932966203627>'
-};
+const { laneIcons, rankIcons } = require('../config/icons');
 
 // ページ分割
 function chunkArray(array, size) {
