@@ -27,7 +27,7 @@ async function getRankFromRiotId(riotId) {
     // 🔥 エラー判定
     if (summoner.status) return "サモナー取得失敗";
 
-    if (!summoner.id) {
+    if (!summoner.puuidid) {
       console.log("IDなし:", summoner);
       return "サモナーID取得失敗";
     }
