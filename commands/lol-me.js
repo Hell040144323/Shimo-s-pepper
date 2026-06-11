@@ -45,15 +45,12 @@ module.exports = {
     const status = userData.public ? '🟢公開' : '🔒非公開';
 
     const rankData = await getRankFromRiotId(userData.lol_id);
+    console.log(rankData);
     let rankText = "取得失敗";
 
     if (typeof rankData === 'object') {
-
-      if (typeof rankData === 'object') {
-
-        const icon = rankIcons[rankData.tier] || '';
-        rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
-      }
+      const icon = rankIcons[rankData.tier] || '';
+      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
     }
 
     const embed = new EmbedBuilder()
