@@ -26,13 +26,6 @@ module.exports = {
 
   async execute(interaction) {
 
-    if (!interaction.member.permissions.has('Administrator')) {
-      return interaction.reply({
-        content: 'このコマンドは管理者のみ使用できます',
-        ephemeral: true
-      });
-    }
-
     const modal = new ModalBuilder()
       .setCustomId('lol-register')
       .setTitle('サモナーネーム登録');
