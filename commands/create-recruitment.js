@@ -23,7 +23,6 @@ module.exports = {
 
         let remaining = time * 60;
 
-        // 🔥 共通Embed関数
         function createEmbed(data) {
             const minutes = Math.floor(data.remaining / 60);
             const seconds = data.remaining % 60;
@@ -86,7 +85,6 @@ module.exports = {
                 clearInterval(interval);
             }
 
-            // 🔥 時間切れ
             if (data.remaining <= 0) {
                 clearInterval(interval);
 
@@ -187,10 +185,9 @@ module.exports = {
             ]
         });
 
-        // 🔥 定員
         if (data.participants.length >= data.max) {
 
-            clearInterval(data.interval); // 🔥これ忘れない
+            clearInterval(data.interval); 
 
             await reaction.message.reply({
                 embeds: [
