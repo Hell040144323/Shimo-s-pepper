@@ -10,6 +10,8 @@ module.exports = {
 
   async execute(interaction) {
 
+    await interaction.deferReply({ ephemeral: true });
+
     const target = interaction.options.getUser('target');
 
     if (!target) {
@@ -92,7 +94,7 @@ module.exports = {
           `${status}`
       });
 
-    await interaction.reply({
+    await interaction.editReply({
       embeds: [embed],
       ephemeral: true
     });
