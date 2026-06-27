@@ -210,7 +210,6 @@ module.exports = {
                             value: data.participants.map(id => `<@${id}>`).join('\n')
                         })
                 ],
-                ephemeral: true
             }).catch(() => { });
 
             await reaction.message.delete();
