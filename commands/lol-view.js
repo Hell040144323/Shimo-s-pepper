@@ -64,19 +64,16 @@ module.exports = {
     // =========================
     // ランク取得
     // =========================
+    const rankData = await getRankFromRiotId(userData.lol_id);
+    
     let rankText = '取得失敗';
 
-    try {
-      const rankData = await getRankFromRiotId(userData.lol_id);
 
-      if (typeof rankData === 'object') {
-        const icon = rankIcons[rankData.tier] || '';
+    if (typeof rankData === 'object') {
+      const icon = rankIcons[rankData.tier] || '';
       rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
-      } else {
-        rankText = rankData;
-      }
-    } catch {
-      rankText = '取得失敗';
+    } else {
+      rankText = rankData;
     }
 
     // =========================
