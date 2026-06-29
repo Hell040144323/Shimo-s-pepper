@@ -10,6 +10,54 @@ const pool = require('../db');
 const { laneIcons } = require('../config/icons');
 
 // =========================
+// ピークランクの取得
+// =========================
+async function updatePeakIfNeeded(userData) {
+
+  const now = Date.now();
+  const last = userData.last_checked
+    ? new Date(userData.last_checked).getTime()
+    : 0;
+
+  if (now - last < 1000 * 60 * 60 * 6) return;
+
+  try {
+    const rankData = await getRankFromRiotId(userData.lol_id);
+
+    if (typeof rankData !== 'object') return;
+
+    const currentScore = convertRankToScore(rankData);
+    const oldScore = userData.peak_score || 0;
+
+    if (currentScore > oldScore) {
+      await pool.query(`
+        UPDATE lol_users
+        SET peak_tier = $1,
+            peak_rank = $2,
+            peak_score = $3,
+            last_checked = NOW()
+        WHERE user_id = $4
+      `, [
+        rankData.tier,
+        rankData.rank,
+        currentScore,
+        userData.user_id
+      ]);
+    } else {
+      // 🔥 更新なくても時間だけ更新
+      await pool.query(`
+        UPDATE lol_users
+        SET last_checked = NOW()
+        WHERE user_id = $1
+      `, [userData.user_id]);
+    }
+
+  } catch (e) {
+    console.error('peak更新エラー', e);
+  }
+}
+
+// =========================
 // サーバーに存在するユーザーだけ残す
 // =========================
 async function cleanUsers(guild, users) {
@@ -78,6 +126,12 @@ module.exports = {
         content: '表示できるデータがありません'
       });
     }
+
+    users.slice(0, 10).forEach((user, index) => {
+      setTimeout(() => {
+        updatePeakIfNeeded(user);
+      }, index * 500);
+    });
 
     const pages = chunkArray(users, 5);
     let page = 0;
