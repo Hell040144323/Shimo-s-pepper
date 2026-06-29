@@ -127,11 +127,9 @@ module.exports = {
       });
     }
 
-    users.slice(0, 10).forEach((user, index) => {
-      setTimeout(() => {
-        updatePeakIfNeeded(user);
-      }, index * 500);
-    });
+    for (const user of users) {
+      updatePeakIfNeeded(user); // awaitつけない
+    }
 
     const pages = chunkArray(users, 5);
     let page = 0;
