@@ -120,7 +120,7 @@ module.exports = {
   },
 
   async execute(interaction) {
-
+    await interaction.deferReply({ ephemeral: true });
     const count = interaction.options.getInteger('count');
 
     if (!count || count < 2) {
@@ -153,7 +153,7 @@ module.exports = {
       started: false
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       content: 'チーム募集を作成したよ！',
       ephemeral: true
     });
