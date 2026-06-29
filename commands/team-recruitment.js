@@ -124,7 +124,7 @@ module.exports = {
     const count = interaction.options.getInteger('count');
 
     if (!count || count < 2) {
-      return interaction.reply({
+      return interaction.editReply({
         content: '人数は2以上にしてね',
         ephemeral: true
       });
