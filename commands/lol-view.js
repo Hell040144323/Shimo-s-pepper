@@ -37,7 +37,7 @@ module.exports = {
     const userData = result.rows[0];
 
     if (!userData) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'このユーザーは登録していません',
         ephemeral: true
       });
@@ -47,7 +47,7 @@ module.exports = {
     // 非公開チェック
     // =========================
     if (!userData.public && !isAdmin) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'このユーザーの情報は非公開です',
         ephemeral: true
       });
