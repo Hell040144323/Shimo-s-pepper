@@ -7,8 +7,31 @@ const {
 } = require('discord.js');
 
 const pool = require('../db');
+const { laneIcons } = require('../config/icons');
 
-const { laneIcons, rankIcons } = require('../config/icons');
+// =========================
+// サーバーに存在するユーザーだけ残す
+// =========================
+async function cleanUsers(guild, users) {
+  const valid = [];
+
+  for (const user of users) {
+    try {
+      await guild.members.fetch(user.user_id);
+      valid.push(user);
+    } catch {
+      // 🔥 サーバーにいない → DB削除
+      await pool.query(
+        `DELETE FROM lol_users WHERE guild_id = $1 AND user_id = $2`,
+        [guild.id, user.user_id]
+      );
+
+      console.log("削除:", user.user_id);
+    }
+  }
+
+  return valid;
+}
 
 // ページ分割
 function chunkArray(array, size) {
@@ -25,19 +48,25 @@ module.exports = {
   },
 
   async execute(interaction) {
+
+    await interaction.deferReply({ ephemeral: true });
+
     const isAdmin = interaction.member.permissions.has(
       PermissionsBitField.Flags.Administrator
     );
 
     const guildId = interaction.guild.id;
 
-    // 🔥 DBから取得
-    const result = await pool.query(
+    // 🔥 DB取得
+    let result = await pool.query(
       `SELECT * FROM lol_users WHERE guild_id = $1`,
       [guildId]
     );
 
     let users = result.rows;
+
+    // 🔥 サーバー外ユーザー削除
+    users = await cleanUsers(interaction.guild, users);
 
     // 🔥 非公開フィルター
     if (!isAdmin) {
@@ -45,18 +74,14 @@ module.exports = {
     }
 
     if (users.length === 0) {
-      return interaction.reply({
-        content: '表示できるデータがありません',
-        ephemeral: true
+      return interaction.editReply({
+        content: '表示できるデータがありません'
       });
     }
 
     const pages = chunkArray(users, 5);
     let page = 0;
 
-    // =========================
-    // Embed生成
-    // =========================
     const generateEmbed = (pageIndex) => {
       const embed = new EmbedBuilder()
         .setTitle(`LoL ID 一覧 (${pageIndex + 1}/${pages.length})`)
@@ -72,20 +97,16 @@ module.exports = {
         embed.addFields({
           name: ' ',
           value:
-            `DiscordID: <@${user.user_id}>\n` +
-            `サモナーネーム: ${user.lol_id}\n` +
+            `Discord: <@${user.user_id}>\n` +
+            `サモナー: ${user.lol_id}\n` +
             `レーン: ${laneText}\n` +
-            `${status}`,
-          inline: false
+            `${status}`
         });
       });
 
       return embed;
     };
 
-    // =========================
-    // ボタン
-    // =========================
     const getRow = (page) =>
       new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -101,16 +122,12 @@ module.exports = {
           .setDisabled(page === pages.length - 1)
       );
 
-    await interaction.reply({
+    await interaction.editReply({
       embeds: [generateEmbed(page)],
-      components: [getRow(page)],
-      ephemeral: true
+      components: [getRow(page)]
     });
   },
 
-  // =========================
-  // ページボタン処理
-  // =========================
   async handleButton(interaction) {
 
     if (
@@ -118,16 +135,17 @@ module.exports = {
       !interaction.customId.startsWith('list-next-')
     ) return false;
 
-    if (interaction.replied || interaction.deferred) return true;
-
     const guildId = interaction.guild.id;
 
-    const result = await pool.query(
+    let result = await pool.query(
       `SELECT * FROM lol_users WHERE guild_id = $1`,
       [guildId]
     );
 
     let users = result.rows;
+
+    // 🔥 再クリーン
+    users = await cleanUsers(interaction.guild, users);
 
     const isAdmin = interaction.member.permissions.has(
       PermissionsBitField.Flags.Administrator
@@ -144,7 +162,6 @@ module.exports = {
     if (interaction.customId.startsWith('list-prev-')) page--;
     if (interaction.customId.startsWith('list-next-')) page++;
 
-    // 再生成
     const embed = new EmbedBuilder()
       .setTitle(`LoL ID 一覧 (${page + 1}/${pages.length})`)
       .setColor(0x0099ff);
@@ -159,8 +176,8 @@ module.exports = {
       embed.addFields({
         name: ' ',
         value:
-          `DiscordID: <@${user.user_id}>\n` +
-          `サモナーネーム: ${user.lol_id}\n` +
+          `Discord: <@${user.user_id}>\n` +
+          `サモナー: ${user.lol_id}\n` +
           `レーン: ${laneText}\n` +
           `${status}`
       });
