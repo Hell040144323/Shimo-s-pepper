@@ -73,6 +73,17 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
+    .setName('team-recruitment')
+    .setDescription('チーム分けを実施するコマンド')
+    .addIntegerOption(option =>
+      option
+        .setName('count')
+        .setDescription('募集人数')
+        .setRequired(true)
+    ),
+
+
+  new SlashCommandBuilder()
     .setName('lol-team')
     .setDescription('メンバーを指定してチーム分け')
     .addUserOption(o => o.setName('user1').setDescription('プレイヤー').setRequired(true))
