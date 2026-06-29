@@ -70,7 +70,8 @@ module.exports = {
       const rankData = await getRankFromRiotId(userData.lol_id);
 
       if (typeof rankData === 'object') {
-        rankText = `${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
+        const icon = rankIcons[rankData.tier] || '';
+      rankText = `${icon} ${rankData.tier} ${rankData.rank} (${rankData.lp}LP)`;
       } else {
         rankText = rankData;
       }
