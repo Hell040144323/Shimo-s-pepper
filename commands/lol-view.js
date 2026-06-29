@@ -2,6 +2,7 @@ const fs = require('fs');
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const pool = require('../db');
 const { laneIcons, rankIcons } = require('../config/icons');
+const { getRankFromRiotId } = require('../utils/lolApi');
 
 module.exports = {
   data: {
