@@ -8,21 +8,19 @@ const {
 
 const pool = require('../db');
 const { laneIcons } = require('../config/icons');
+const { getRankFromRiotId } = require('../utils/lolApi');
 
 // =========================
 // ピークランクの取得
 // =========================
 async function updatePeakIfNeeded(userData) {
 
-  const now = Date.now();
-  const last = userData.last_checked
-    ? new Date(userData.last_checked).getTime()
-    : 0;
-
-  if (now - last < 1000 * 60 * 60 * 6) return;
+  console.log("peakチェック:", userData.user_id);
 
   try {
     const rankData = await getRankFromRiotId(userData.lol_id);
+
+    console.log("rankData:", rankData);
 
     if (typeof rankData !== 'object') return;
 
@@ -30,30 +28,26 @@ async function updatePeakIfNeeded(userData) {
     const oldScore = userData.peak_score || 0;
 
     if (currentScore > oldScore) {
+
       await pool.query(`
         UPDATE lol_users
         SET peak_tier = $1,
             peak_rank = $2,
-            peak_score = $3,
-            last_checked = NOW()
-        WHERE user_id = $4
+            peak_score = $3
+        WHERE guild_id = $4 AND user_id = $5
       `, [
         rankData.tier,
         rankData.rank,
         currentScore,
+        userData.guild_id,
         userData.user_id
       ]);
-    } else {
-      // 🔥 更新なくても時間だけ更新
-      await pool.query(`
-        UPDATE lol_users
-        SET last_checked = NOW()
-        WHERE user_id = $1
-      `, [userData.user_id]);
+
+      console.log("🔥 peak更新成功");
     }
 
   } catch (e) {
-    console.error('peak更新エラー', e);
+    console.error("peak更新エラー:", e);
   }
 }
 
