@@ -9,6 +9,7 @@ const {
 const pool = require('../db');
 const { laneIcons } = require('../config/icons');
 const { getRankFromRiotId } = require('../utils/lolApi');
+const { convertRankToScore } = require('../utils/rankUtils');
 
 // =========================
 // ピークランクの取得
