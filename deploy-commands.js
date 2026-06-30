@@ -81,6 +81,9 @@ const commands = [
         .setDescription('募集人数')
         .setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName('lol-peak-check')
+    .setDescription('全員のピークランクを確認するコマンド（管理者専用）'),
 
 
   new SlashCommandBuilder()
