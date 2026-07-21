@@ -2,7 +2,7 @@ const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 
 const commands = [
   new SlashCommandBuilder()
-    .setName('test')
+    .setName('テスト')
     .setDescription('Helloを返すコマンド（テスト用※削除予定）'),
 
   new SlashCommandBuilder()

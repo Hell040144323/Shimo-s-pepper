@@ -3,7 +3,7 @@ const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   data: {
-    name: 'test'
+    name: 'テスト'
   },
 
   async execute(interaction) {
