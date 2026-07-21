@@ -49,11 +49,11 @@ const commands = [
     ),
   new SlashCommandBuilder()
     .setName('config')
-    .setDescription('セットアップチュートリアルを表示するコマンド'),
+    .setDescription('ロール設定を表示するコマンド（管理者用）'),
 
   new SlashCommandBuilder()
-    .setName('create-recruitment')
-    .setDescription('LoL募集の埋め込みを作成するコマンド（管理者用）')
+    .setName('募集作成')
+    .setDescription('LoL募集の埋め込みを作成するコマンド')
     .addStringOption(option =>
       option
         .setName('count')

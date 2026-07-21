@@ -53,8 +53,6 @@ const pool = require('./db');
 client.on(Events.InteractionCreate, async interaction => {
   try {
 
-    console.log("TOKEN:", process.env.DISCORD_BOT_TOKEN);
-
     // =========================
     // スラッシュコマンド
     // =========================
@@ -65,34 +63,37 @@ client.on(Events.InteractionCreate, async interaction => {
       await command.execute(interaction);
       return;
     }
-    console.log(interaction.customId);
 
     // =========================
     // モーダル
     // =========================
     if (interaction.isModalSubmit()) {
 
-      if (interaction.isModalSubmit()) {
-        for (const command of commands.values()) {
-          if (command.handleModal) {
-            const handled = await command.handleModal(interaction);
-            if (handled) return;
-          }
+      for (const command of commands.values()) {
+        if (command.handleModal) {
+          const handled = await command.handleModal(interaction);
+          if (handled) return;
         }
       }
+
+      return;
     }
+
     // =========================
     // ボタン
     // =========================
     if (interaction.isButton()) {
 
-      // 各コマンドに処理を任せる
+      console.log(interaction.customId); // ←ここに移動
+
       for (const command of commands.values()) {
         if (command.handleButton) {
           const handled = await command.handleButton(interaction);
           if (handled) return;
         }
       }
+
+      return;
     }
 
     // =========================
@@ -106,10 +107,9 @@ client.on(Events.InteractionCreate, async interaction => {
           if (handled) return;
         }
       }
+
+      return;
     }
-
-
-
 
   } catch (error) {
     console.error(error);
