@@ -53,24 +53,7 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('募集作成')
-    .setDescription('LoL募集の埋め込みを作成するコマンド')
-    .addStringOption(option =>
-      option
-        .setName('count')
-        .setDescription('募集人数')
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-      option
-        .setName('title')
-        .setDescription('募集内容（例: ランク/メイヘム/ノーマル/雑談）')
-        .setRequired(true)
-    )
-    .addIntegerOption(option =>
-      option.setName('time')
-        .setDescription('募集期間（分）')
-        .setRequired(true)
-    ),
+    .setDescription('LoL募集の埋め込みを作成するコマンド'),
 
   new SlashCommandBuilder()
     .setName('team-recruitment')
