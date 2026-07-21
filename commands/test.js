@@ -8,7 +8,7 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.reply({
-      content: 'こんにちは！わたしはシモちゃんのペッパー君です！',
+      content: 'こんにちは！わたしはシモちゃんのペッパー君です！テストです',
     });
   }
 };
