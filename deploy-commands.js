@@ -81,7 +81,12 @@ const commands = [
     .addUserOption(o => o.setName('user7').setDescription('プレイヤー'))
     .addUserOption(o => o.setName('user8').setDescription('プレイヤー'))
     .addUserOption(o => o.setName('user9').setDescription('プレイヤー'))
-    .addUserOption(o => o.setName('user10').setDescription('プレイヤー'))
+    .addUserOption(o => o.setName('user10').setDescription('プレイヤー')),
+
+
+  new SlashCommandBuilder()
+    .setName('募集ボタン設定')
+    .setDescription('募集ボタンを設定するコマンド'),
 
 ].map(command => command.toJSON());
 
