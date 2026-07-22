@@ -39,8 +39,7 @@ module.exports = {
 
     if (interaction.customId !== 'start-recruitment') return false;
 
-    // 🔥 lol-recruitment を呼び出す
-    const command = interaction.client.commands.get('lol-recruitment');
+    const command = interaction.client.commands.get('募集作成');
 
     if (!command) return false;
 
