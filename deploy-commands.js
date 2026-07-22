@@ -10,16 +10,16 @@ const commands = [
     .setDescription('サモナーネームを登録するコマンド'),
 
   new SlashCommandBuilder()
-    .setName('lol-list')
+    .setName('プロフィール確認-全員')
     .setDescription('登録されたサモナーネームを表示するコマンド'),
 
   new SlashCommandBuilder()
-    .setName('lol-me')
-    .setDescription('自分の登録したサモナーネームを表示するコマンド'),
+    .setName('プロフィール確認-自分')
+    .setDescription('自分の登録したサモナーネームを表示し、編集できるコマンド'),
 
   new SlashCommandBuilder()
-    .setName('lol-delete')
-    .setDescription('LoL IDを削除')
+    .setName('プロフィール削除')
+    .setDescription('登録したサモナーネームを削除')
     .addUserOption(option =>
       option
         .setName('target')

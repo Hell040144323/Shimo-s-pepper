@@ -8,7 +8,7 @@ const {
 
 module.exports = {
   data: {
-    name: 'lol-delete'
+    name: 'プロフィール削除'
   },
 
   async execute(interaction) {

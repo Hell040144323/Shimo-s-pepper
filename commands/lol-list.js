@@ -87,7 +87,7 @@ function chunkArray(array, size) {
 
 module.exports = {
   data: {
-    name: 'lol-list'
+    name: 'プロフィール確認-全員'
   },
 
   async execute(interaction) {

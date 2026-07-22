@@ -17,7 +17,7 @@ const { laneIcons, rankIcons } = require('../config/icons');
 
 module.exports = {
   data: {
-    name: 'lol-me'
+    name: 'プロフィール確認'
   },
 
   // =========================
