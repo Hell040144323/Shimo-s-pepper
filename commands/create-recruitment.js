@@ -8,6 +8,8 @@ const {
     TextInputStyle
 } = require('discord.js');
 
+const pool = require('../db');
+
 const recruitments = require('../recruitments');
 
 module.exports = {
@@ -108,7 +110,26 @@ module.exports = {
 
         const row = new ActionRowBuilder().addComponents(cancelButton);
 
-        const message = await interaction.channel.send({
+        const result = await pool.query(
+            `SELECT recruit_channel_id FROM guild_settings WHERE guild_id = $1`,
+            [interaction.guild.id]
+        );
+
+        const channelId = result.rows[0]?.recruit_channel_id;
+
+        if (!channelId) {
+            await interaction.editReply('募集チャンネルが設定されていません');
+            return true;
+        }
+
+        const recruitChannel = interaction.guild.channels.cache.get(channelId);
+
+        if (!recruitChannel) {
+            await interaction.editReply('チャンネルが見つかりません');
+            return true;
+        }
+
+        const message = await recruitChannel.send({
             content: '@everyone',
             embeds: [createEmbed({
                 title,

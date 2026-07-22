@@ -4,8 +4,10 @@ const {
   ButtonStyle,
   ModalBuilder,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
+  PermissionFlagsBits
 } = require('discord.js');
+const pool = require('../db');
 
 module.exports = {
   data: {
@@ -14,12 +16,35 @@ module.exports = {
 
   async execute(interaction) {
     
-    if (!interaction.member.permissions.has('Administrator')) {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
     return interaction.reply({
       content: 'このコマンドは管理者のみ使用できます',
       ephemeral: true
     });
   }
+
+  const channel = interaction.options.getChannel('channel');
+
+  if(!channel){
+    return interaction.reply({
+      content: 'チャンネルを指定してください',
+      ephemeral: true
+    });
+  }
+  await pool.query(
+      `
+      INSERT INTO guild_settings (guild_id, recruit_channel_id)
+      VALUES ($1, $2)
+      ON CONFLICT (guild_id)
+      DO UPDATE SET recruit_channel_id = $2
+      `,
+      [interaction.guild.id, channel.id]
+    );
+
+    await interaction.reply({
+      content: `募集チャンネルを <#${channel.id}> に設定したよ！`,
+      ephemeral: true
+    });
 
     const button = new ButtonBuilder()
       .setCustomId('start-recruitment')

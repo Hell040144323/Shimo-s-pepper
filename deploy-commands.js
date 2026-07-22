@@ -86,7 +86,13 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('募集ボタン設定')
-    .setDescription('募集ボタンを設定するコマンド'),
+    .setDescription('募集ボタンを設定するコマンド')
+    .addChannelOption(option =>
+      option
+        .setName('channel')
+        .setDescription('募集を送るチャンネル')
+        .setRequired(true)
+    ),
 
 ].map(command => command.toJSON());
 
