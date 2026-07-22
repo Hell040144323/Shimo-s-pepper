@@ -53,7 +53,7 @@ module.exports = {
 
     const row = new ActionRowBuilder().addComponents(button);
 
-    await interaction.reply({
+    await interaction.followUp({
       content: '募集を開始するには以下のボタンをクリックしてください。',
       components: [row]
     });
